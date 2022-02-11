@@ -18,6 +18,12 @@ public class Player : MonoBehaviour
     public float AttackRate;
     public float LastAttackTime;
 
+    [Header("Experience")]
+    public int CurLevel;
+    public int CurXp;
+    public int XpToNextLevel;
+    public float LevelXpModifier;
+
     [Header("Sprites")]
     public Sprite DownSprite;
     public Sprite UpSprite;
@@ -103,5 +109,20 @@ public class Player : MonoBehaviour
     public void Die()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
+    }
+
+    public void AddXp(int xp)
+    {
+        CurXp += xp;
+
+        if (CurXp >= XpToNextLevel)
+            LevelUp();
+    }
+
+    private void LevelUp()
+    {
+        CurXp -= XpToNextLevel;
+        CurLevel++;
+        XpToNextLevel = Mathf.RoundToInt(XpToNextLevel * LevelXpModifier);
     }
 }
