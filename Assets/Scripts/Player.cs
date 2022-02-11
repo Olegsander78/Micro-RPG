@@ -26,11 +26,13 @@ public class Player : MonoBehaviour
 
     private Rigidbody2D _rig;
     private SpriteRenderer _spriteRenderer;
+    private ParticleSystem _hitEffect;
 
     private void Awake()
     {
         _rig = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _hitEffect = gameObject.GetComponentInChildren<ParticleSystem>();
     }
 
     private void Update()
@@ -55,6 +57,9 @@ public class Player : MonoBehaviour
         if(hit.collider != null)
         {
             hit.collider.GetComponent<Enemy>().TakeDamage(Damage);
+
+            _hitEffect.transform.position = hit.collider.transform.position;
+            _hitEffect.Play();
         }
     }
 
