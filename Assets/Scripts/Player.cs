@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     public int CurHP;
     public int MaxHP;
     public int Damage;
+    public float InteractRange;
 
     private Vector2 _facingDirection;
 
@@ -33,12 +34,21 @@ public class Player : MonoBehaviour
     private Rigidbody2D _rig;
     private SpriteRenderer _spriteRenderer;
     private ParticleSystem _hitEffect;
+    private PlayerUI _ui;
 
     private void Awake()
     {
         _rig = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _hitEffect = gameObject.GetComponentInChildren<ParticleSystem>();
+        _ui = FindObjectOfType<PlayerUI>();
+    }
+
+    private void Start()
+    {
+        _ui.UpdateHealthBar();
+        _ui.UpdateXPBar();
+        _ui.UpdateLevelText();
     }
 
     private void Update()
@@ -51,6 +61,27 @@ public class Player : MonoBehaviour
             {
                 Attack();
             }
+        }
+
+        CheckInteract();
+    }
+
+    private void CheckInteract()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, _facingDirection, InteractRange, 1 << 9);
+
+        if (hit.collider != null)
+        {
+            Interactable interactable = hit.collider.GetComponent<Interactable>();
+            _ui.SetInteractText(hit.collider.transform.position, interactable.InteractDescription);
+
+            if (Input.GetKeyDown(AttackKey))
+            {
+                interactable.Interact();
+            }
+        }else
+        {
+            _ui.DisableInteractText();
         }
     }
 
@@ -100,6 +131,8 @@ public class Player : MonoBehaviour
     {
         CurHP -= damageTaken;
 
+        _ui.UpdateHealthBar();
+
         if (CurHP <= 0)
         {
             Die();
@@ -114,6 +147,7 @@ public class Player : MonoBehaviour
     public void AddXp(int xp)
     {
         CurXp += xp;
+        _ui.UpdateXPBar();
 
         if (CurXp >= XpToNextLevel)
             LevelUp();
@@ -124,5 +158,8 @@ public class Player : MonoBehaviour
         CurXp -= XpToNextLevel;
         CurLevel++;
         XpToNextLevel = Mathf.RoundToInt(XpToNextLevel * LevelXpModifier);
+
+        _ui.UpdateLevelText();
+        _ui.UpdateXPBar();
     }
 }
