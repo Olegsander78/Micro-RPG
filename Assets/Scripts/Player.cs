@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public int MaxHP;
     public int Damage;
     public float InteractRange;
+    public List<string> Inventory = new List<string>();
 
     private Vector2 _facingDirection;
 
@@ -161,5 +162,11 @@ public class Player : MonoBehaviour
 
         _ui.UpdateLevelText();
         _ui.UpdateXPBar();
+    }
+
+    public void AddItemToInventory(string item)
+    {
+        Inventory.Add(item);
+        _ui.UpdateInventoryText();
     }
 }

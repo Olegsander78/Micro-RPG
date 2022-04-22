@@ -39,4 +39,14 @@ public class PlayerUI : MonoBehaviour
             InteractText.gameObject.SetActive(false);
         }
     }
+
+    public void UpdateInventoryText()
+    {
+        InventoryText.text = "";
+
+        foreach(string item in _player.Inventory)
+        {
+            InventoryText.text += item + "\n";
+        }
+    }
 }
